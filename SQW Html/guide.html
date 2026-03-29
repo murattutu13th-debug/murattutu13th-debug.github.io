@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kullanim Kilavuzu — QuantumSynth</title>
+    <style>
+        :root {
+            --bg: #0a0a14; --bg2: #12121e; --bg3: #1a1a2e;
+            --purple: #a080ff; --cyan: #40c0ff; --gold: #ffc040;
+            --red: #ff6b6b; --green: #4ee6a8;
+            --t1: #e0e0f0; --t2: #a0a0b8; --t3: #606080;
+            --border: #2a2a3e;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { background:var(--bg); color:var(--t1); font-family:'Segoe UI',system-ui,sans-serif; line-height:1.7; }
+        nav { background:rgba(10,10,20,0.95); backdrop-filter:blur(10px); border-bottom:1px solid var(--border); position:fixed; top:0; width:100%; z-index:1000; padding:0 2rem; }
+        .nav-c { max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; height:60px; }
+        .logo { font-size:1.3rem; font-weight:700; background:linear-gradient(135deg,var(--purple),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-decoration:none; display:flex; align-items:center; gap:8px; }
+        .logo-icon { width:28px; height:28px; filter:invert(1) brightness(0.9); }
+        .nav-links { display:flex; gap:1.5rem; list-style:none; align-items:center; }
+        .nav-links a { color:var(--t2); text-decoration:none; font-size:0.85rem; font-weight:500; transition:color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color:var(--cyan); }
+        .lang-btn { background:rgba(160,128,255,0.15); border:1px solid var(--purple); color:var(--purple); padding:4px 14px; border-radius:16px; cursor:pointer; font-size:0.8rem; font-weight:600; }
+        .hamburger { display:none; background:none; border:none; color:var(--t1); font-size:1.5rem; cursor:pointer; }
+
+        .container { max-width:900px; margin:0 auto; padding:100px 2rem 60px; }
+        .page-title { font-size:2rem; font-weight:700; margin-bottom:0.5rem; }
+        .page-sub { color:var(--t2); margin-bottom:3rem; }
+
+        h2 { font-size:1.5rem; margin:3rem 0 1rem; color:var(--cyan); padding-bottom:0.5rem; border-bottom:1px solid var(--border); }
+        h3 { font-size:1.1rem; margin:1.5rem 0 0.5rem; color:var(--gold); }
+        p { color:var(--t2); margin-bottom:1rem; font-size:0.95rem; }
+        ul, ol { margin:0.5rem 0 1rem 1.5rem; color:var(--t2); }
+        li { margin-bottom:0.5rem; font-size:0.95rem; }
+
+        .step-box { background:var(--bg3); border:1px solid var(--border); border-radius:12px; padding:1.5rem 2rem; margin:1rem 0; }
+        .step-box h3 { margin-top:0; }
+
+        .key { display:inline-block; background:var(--bg2); border:1px solid var(--border); color:var(--cyan); padding:2px 10px; border-radius:6px; font-size:0.8rem; font-family:'Consolas',monospace; }
+
+        .tip-box { background:rgba(64,192,255,0.05); border:1px solid rgba(64,192,255,0.2); border-radius:12px; padding:16px 20px; margin:1rem 0; }
+        .tip-box p { margin:0; color:var(--t2); font-size:0.9rem; }
+        .tip-box strong { color:var(--cyan); }
+
+        .warn-box { background:rgba(255,107,107,0.08); border:1px solid rgba(255,107,107,0.3); border-radius:12px; padding:16px 20px; margin:1rem 0; }
+        .warn-box p { margin:0; color:var(--t2); font-size:0.9rem; }
+        .warn-box strong { color:var(--red); }
+
+        .layout-desc { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin:1.5rem 0; }
+        .layout-card { background:var(--bg3); border:1px solid var(--border); border-radius:12px; padding:1.5rem; }
+        .layout-card h4 { color:var(--purple); margin-bottom:0.5rem; font-size:1rem; }
+        .layout-card p { font-size:0.9rem; margin:0; }
+
+        .screen-img { width:100%; border-radius:10px; border:1px solid var(--border); margin:1.2rem 0; box-shadow:0 8px 24px rgba(0,0,0,0.4); }
+        .pro-badge { display:inline-block; background:rgba(255,192,64,0.15); border:1px solid var(--gold); color:var(--gold); padding:2px 10px; border-radius:12px; font-size:0.75rem; font-weight:700; margin-left:8px; vertical-align:middle; }
+        .std-badge { display:inline-block; background:rgba(64,192,255,0.1); border:1px solid var(--cyan); color:var(--cyan); padding:2px 10px; border-radius:12px; font-size:0.75rem; font-weight:700; margin-left:8px; vertical-align:middle; }
+
+        footer { background:var(--bg2); border-top:1px solid var(--border); padding:30px 2rem; margin-top:4rem; text-align:center; }
+        footer p { color:var(--t3); font-size:0.8rem; }
+        .foot-warn { color:var(--red); font-weight:600; margin-top:0.75rem; font-size:0.8rem; }
+        .foot-links { display:flex; justify-content:center; gap:2rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+        .foot-links a { color:var(--t2); text-decoration:none; font-size:0.85rem; }
+        .foot-links a:hover { color:var(--cyan); }
+
+        @media(max-width:768px) {
+            .nav-links { display:none; }
+            .hamburger { display:block; }
+            .nav-links.open { display:flex; flex-direction:column; position:absolute; top:60px; left:0; right:0; background:var(--bg); padding:1rem 2rem; border-bottom:1px solid var(--border); }
+            .layout-desc { grid-template-columns:1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-c">
+        <a href="index.html" class="logo"><img src="images/icon.png" alt="" class="logo-icon">QuantumSynth</a>
+        <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')">&#9776;</button>
+        <ul class="nav-links">
+            <li><a href="index.html" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
+            <li><a href="features.html" data-tr="Ozellikler" data-en="Features">Ozellikler</a></li>
+            <li><a href="discovery.html" data-tr="Kesif" data-en="Discovery">Kesif</a></li>
+            <li><a href="architecture.html" data-tr="Mimari" data-en="Architecture">Mimari</a></li>
+            <li><a href="guide.html" class="active" data-tr="Kilavuz" data-en="Guide">Kilavuz</a></li>
+            <li><a href="disclaimer.html" data-tr="Yasal" data-en="Legal">Yasal</a></li>
+            <li><a href="community.html" data-tr="Topluluk" data-en="Community">Topluluk</a></li>
+            <li><a href="https://doi.org/10.5281/zenodo.19221418" target="_blank">Zenodo</a></li>
+            <li><button class="lang-btn" onclick="toggleLang()">EN</button></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+
+    <h1 class="page-title" data-tr="Kullanim Kilavuzu" data-en="User Guide">Kullanim Kilavuzu</h1>
+    <p class="page-sub" data-tr="QuantumSynth V3.5 Pro — adim adim kullanim rehberi" data-en="QuantumSynth V3.5 Pro — step-by-step usage guide">QuantumSynth V3.5 Pro — adim adim kullanim rehberi</p>
+
+    <div class="tip-box">
+        <p data-tr="&lt;strong&gt;Standard vs Pro:&lt;/strong&gt; Standard surumde Media Creator butonu (LOAD / SAVE / IMPORT / REC) calismaz. Sadece Pro surumde aktiftir." data-en="&lt;strong&gt;Standard vs Pro:&lt;/strong&gt; In the Standard version, Media Creator buttons (LOAD / SAVE / IMPORT / REC) are disabled. Only active in Pro version."><strong>Standard vs Pro:</strong> Standard surumde Media Creator butonu (LOAD / SAVE / IMPORT / REC) calismaz. Sadece Pro surumde aktiftir.</p>
+    </div>
+
+    <!-- LAYOUT -->
+    <h2 data-tr="Arayuz Yapisi" data-en="Interface Layout">Arayuz Yapisi</h2>
+    <p data-tr="Program acildiginda sol ve sag paneller kapalidir. Kenarlardan surekleyerek acabilirsiniz." data-en="When the program opens, left and right panels are collapsed. Drag from edges to reveal them.">Program acildiginda sol ve sag paneller kapalidir. Kenarlardan surekleyerek acabilirsiniz.</p>
+    <img src="images/main_window.png" alt="Main Window" class="screen-img">
+
+    <div class="layout-desc">
+        <div class="layout-card">
+            <h4 data-tr="Sol Panel" data-en="Left Panel">Sol Panel</h4>
+            <p data-tr="VOICES: Aktif sesleri gorur. FREQUENCY: Hz, NM, DIFF, MUL sutunlari. TUNING: Original Midi / Sacred Optimizer. WAVEFORM: Sine/Saw/Square/Triangle. FX: Harmonics, oktav, faz sliders." data-en="VOICES: View active voices. FREQUENCY: Hz, NM, DIFF, MUL columns. TUNING: Original Midi / Sacred Optimizer. WAVEFORM: Sine/Saw/Square/Triangle. FX: Harmonics, octave, phase sliders.">VOICES: Aktif sesleri gorur. FREQUENCY: Hz, NM, DIFF, MUL sutunlari. TUNING: Original Midi / Sacred Optimizer. WAVEFORM: Sine/Saw/Square/Triangle. FX: Harmonics, oktav, faz sliders.</p>
+        </div>
+        <div class="layout-card">
+            <h4 data-tr="Sag Panel" data-en="Right Panel">Sag Panel</h4>
+            <p data-tr="AVATAR (162): Reflection (81) ve Rotation (81) alt tablari. SHADOW (64): DNA codon frekanslari. Her buton bir frekans — tiklayin calsin." data-en="AVATAR (162): Reflection (81) and Rotation (81) sub-tabs. SHADOW (64): DNA codon frequencies. Each button is a frequency — click to play.">AVATAR (162): Reflection (81) ve Rotation (81) alt tablari. SHADOW (64): DNA codon frekanslari. Her buton bir frekans — tiklayin calsin.</p>
+        </div>
+        <div class="layout-card">
+            <h4 data-tr="Orta Alan" data-en="Center Area">Orta Alan</h4>
+            <p data-tr="Kathara 3D gorunumu. Solfeggio frekanslari, Merkaba piramitleri, Vitruvian overlay. Tree/Tesla gorunum gecisi." data-en="Kathara 3D view. Solfeggio frequencies, Merkaba pyramids, Vitruvian overlay. Tree/Tesla view toggle.">Kathara 3D gorunumu. Solfeggio frekanslari, Merkaba piramitleri, Vitruvian overlay. Tree/Tesla gorunum gecisi.</p>
+        </div>
+        <div class="layout-card">
+            <h4 data-tr="Alt Panel" data-en="Bottom Panel">Alt Panel</h4>
+            <p data-tr="MIDI Recorder / Timeline. 8 kanalli kayit ve duzenleme. VIZ tabinda 7 yuzebilir gorselleştirme penceresi." data-en="MIDI Recorder / Timeline. 8-channel recording and editing. VIZ tab has 7 floating visualization windows.">MIDI Recorder / Timeline. 8 kanalli kayit ve duzenleme. VIZ tabinda 7 yuzebilir gorselleştirme penceresi.</p>
+        </div>
+    </div>
+
+    <!-- FIRST STEPS -->
+    <h2 data-tr="Ilk Adimlar" data-en="First Steps">Ilk Adimlar</h2>
+
+    <div class="step-box">
+        <h3 data-tr="1. Frekans Calmak" data-en="1. Playing Frequencies">1. Frekans Calmak</h3>
+        <p data-tr="Sag paneli surekleyerek acin. AVATAR tabinda Reflection veya Rotation alt tabini secin. Herhangi bir butona tiklayin — o frekans calacaktir. Reflection butonlari sol kulakliktan, Rotation butonlari sag kulakliktan gelir." data-en="Drag to open the right panel. In AVATAR tab, select Reflection or Rotation sub-tab. Click any button — that frequency will play. Reflection buttons come from left headphone, Rotation buttons from right headphone.">Sag paneli surekleyerek acin. AVATAR tabinda Reflection veya Rotation alt tabini secin. Herhangi bir butona tiklayin — o frekans calacaktir. Reflection butonlari sol kulakliktan, Rotation butonlari sag kulakliktan gelir.</p>
+    </div>
+
+    <div class="step-box">
+        <h3 data-tr="2. MIDI Dosyasi Yuklemek" data-en="2. Loading a MIDI File">2. MIDI Dosyasi Yuklemek</h3>
+        <p data-tr="Ust menuden veya surukle-birak ile bir MIDI dosyasi yukleyin. Program otomatik olarak her notayi 342 frekans sistemindeki en yakin frekansa esler. Reflection notalari sola, Rotation notalari saga, Shadow notalari merkeze pan edilir." data-en="Load a MIDI file from the top menu or drag-drop. The program automatically maps each note to the nearest frequency in the 342 system. Reflection notes pan left, Rotation notes pan right, Shadow notes pan center.">Ust menuden veya surukle-birak ile bir MIDI dosyasi yukleyin. Program otomatik olarak her notayi 342 frekans sistemindeki en yakin frekansa esler. Reflection notalari sola, Rotation notalari saga, Shadow notalari merkeze pan edilir.</p>
+    </div>
+
+    <div class="step-box">
+        <h3 data-tr="3. Binaural Beat Aktivasyonu" data-en="3. Binaural Beat Activation">3. Binaural Beat Aktivasyonu</h3>
+        <p data-tr="MIDI calmayi baslattiktan sonra binaural motorlar devreye girer:" data-en="After starting MIDI playback, binaural engines engage:">MIDI calmayi baslattiktan sonra binaural motorlar devreye girer:</p>
+        <ul>
+            <li data-tr="&lt;strong&gt;Heart butonu:&lt;/strong&gt; Theta Drone baslar (322+325 Hz, -18 dB). Muzik altinda subliminal calar." data-en="&lt;strong&gt;Heart button:&lt;/strong&gt; Theta Drone starts (322+325 Hz, -18 dB). Plays subliminally under music."><strong>Heart butonu:</strong> Theta Drone baslar (322+325 Hz, -18 dB). Muzik altinda subliminal calar.</li>
+            <li data-tr="&lt;strong&gt;Trinity butonu:&lt;/strong&gt; Heart + Body Key birlikte. 6 frekansli mukemmel denge." data-en="&lt;strong&gt;Trinity button:&lt;/strong&gt; Heart + Body Key together. 6-frequency perfect balance."><strong>Trinity butonu:</strong> Heart + Body Key birlikte. 6 frekansli mukemmel denge.</li>
+            <li data-tr="&lt;strong&gt;Fibonacci butonu:&lt;/strong&gt; Heart Key + Fibonacci pozisyonlama." data-en="&lt;strong&gt;Fibonacci button:&lt;/strong&gt; Heart Key + Fibonacci positioning."><strong>Fibonacci butonu:</strong> Heart Key + Fibonacci pozisyonlama.</li>
+        </ul>
+    </div>
+
+    <div class="tip-box">
+        <p data-tr="&lt;strong&gt;Ipucu:&lt;/strong&gt; Kulaklik kullanin! Binaural beat ancak kulaklikla calisir — sol ve sag kulaga farkli frekanslar gonderilir, beyin aralarindaki farki (3 Hz Theta) olusturur." data-en="&lt;strong&gt;Tip:&lt;/strong&gt; Use headphones! Binaural beats only work with headphones — different frequencies are sent to left and right ears, the brain creates the difference (3 Hz Theta)."><strong>Ipucu:</strong> Kulaklik kullanin! Binaural beat ancak kulaklikla calisir — sol ve sag kulaga farkli frekanslar gonderilir, beyin aralarindaki farki (3 Hz Theta) olusturur.</p>
+    </div>
+
+    <!-- TUNING -->
+    <h2 data-tr="Tuning Sistemi" data-en="Tuning System">Tuning Sistemi</h2>
+    <img src="images/tuning.png" alt="Tuning Panel" class="screen-img">
+
+    <div class="step-box">
+        <h3 data-tr="Pure Snap (Original Midi)" data-en="Pure Snap (Original Midi)">Pure Snap (Original Midi)</h3>
+        <p data-tr="Varsayilan mod. MIDI notalari dogrudan 342 frekans sistemindeki en yakin frekansa snap edilir. Temiz ve net ses." data-en="Default mode. MIDI notes snap directly to the nearest frequency in the 342 system. Clean and clear sound.">Varsayilan mod. MIDI notalari dogrudan 342 frekans sistemindeki en yakin frekansa snap edilir. Temiz ve net ses.</p>
+    </div>
+
+    <div class="step-box">
+        <h3 data-tr="Sacred Optimizer" data-en="Sacred Optimizer">Sacred Optimizer</h3>
+        <p data-tr="Brute-force optimizasyon: her notu 50 kutsal carpanla (phi, pi, e, sqrt turevleri) test eder. En yakin Avatar veya Shadow frekansina esleyen carpani secer. Sonucu FREQUENCY tabinda MUL sutununda gorebilirsiniz." data-en="Brute-force optimization: tests each note with 50 sacred multipliers (phi, pi, e, sqrt derivatives). Selects the multiplier that maps to the nearest Avatar or Shadow frequency. See the result in the MUL column of FREQUENCY tab.">Brute-force optimizasyon: her notu 50 kutsal carpanla (phi, pi, e, sqrt turevleri) test eder. En yakin Avatar veya Shadow frekansina esleyen carpani secer. Sonucu FREQUENCY tabinda MUL sutununda gorebilirsiniz.</p>
+    </div>
+
+    <!-- MIDI RECORDER -->
+    <h2 data-tr="Media Creator (MIDI Recorder)" data-en="Media Creator (MIDI Recorder)">Media Creator (MIDI Recorder) <span class="pro-badge">PRO</span></h2>
+
+    <div class="warn-box">
+        <p data-tr="&lt;strong&gt;Sadece Pro:&lt;/strong&gt; LOAD, SAVE, IMPORT ve REC butonlari Standard surumde devre disidir. Bu ozellikler yalnizca Pro lisansiyla aktif olur." data-en="&lt;strong&gt;Pro Only:&lt;/strong&gt; LOAD, SAVE, IMPORT and REC buttons are disabled in Standard version. These features are only active with a Pro license."><strong>Sadece Pro:</strong> LOAD, SAVE, IMPORT ve REC butonlari Standard surumde devre disidir. Bu ozellikler yalnizca Pro lisansiyla aktif olur.</p>
+    </div>
+
+    <img src="images/midi_creator.png" alt="Media Creator / MIDI Recorder" class="screen-img">
+
+    <div class="step-box">
+        <h3 data-tr="Kayit ve Duzenleme" data-en="Recording and Editing">Kayit ve Duzenleme</h3>
+        <p data-tr="Alt paneldeki timeline'a not eklemek icin sag paneldeki frekans butonlarini surukleyin. Veya canli olarak tiklayarak kayit yapin. 8 kanala kadar destek." data-en="Drag frequency buttons from the right panel to the timeline in the bottom panel. Or record live by clicking. Supports up to 8 channels.">Alt paneldeki timeline'a not eklemek icin sag paneldeki frekans butonlarini surukleyin. Veya canli olarak tiklayarak kayit yapin. 8 kanala kadar destek.</p>
+    </div>
+
+    <div class="step-box">
+        <h3 data-tr="DNA Spiral Playback" data-en="DNA Spiral Playback">DNA Spiral Playback</h3>
+        <p data-tr="Kayitli veya import edilmis MIDI'yi DNA Spiral modunda oynatir. Binaural drone otomatik olarak baslar (Heart/Trinity/Fibonacci moduna gore). Gorsellestirme DNA sarmal yapisini canli gosterir." data-en="Plays recorded or imported MIDI in DNA Spiral mode. Binaural drone starts automatically (based on Heart/Trinity/Fibonacci mode). Visualization shows DNA helix structure live.">Kayitli veya import edilmis MIDI'yi DNA Spiral modunda oynatir. Binaural drone otomatik olarak baslar (Heart/Trinity/Fibonacci moduna gore). Gorsellestirme DNA sarmal yapisini canli gosterir.</p>
+    </div>
+
+    <!-- WAV EXPORT -->
+    <h2 data-tr="WAV Export" data-en="WAV Export">WAV Export <span class="pro-badge">PRO</span></h2>
+
+    <div class="step-box">
+        <h3 data-tr="Stereo Dosya Kaydetme" data-en="Saving Stereo Files">Stereo Dosya Kaydetme</h3>
+        <p data-tr="Kayitli MIDI'yi stereo WAV olarak export edin. Cikti dosyasi Reflection=Sol, Rotation=Sag, Shadow=Merkez pan ile kaydedilir. Binaural beat dahildir. 44100 Hz, 16-bit stereo." data-en="Export recorded MIDI as stereo WAV. Output file is saved with Reflection=Left, Rotation=Right, Shadow=Center panning. Binaural beat included. 44100 Hz, 16-bit stereo.">Kayitli MIDI'yi stereo WAV olarak export edin. Cikti dosyasi Reflection=Sol, Rotation=Sag, Shadow=Merkez pan ile kaydedilir. Binaural beat dahildir. 44100 Hz, 16-bit stereo.</p>
+    </div>
+
+    <!-- VISUALIZATIONS -->
+    <h2 data-tr="Gorsellestirmeler" data-en="Visualizations">Gorsellestirmeler</h2>
+
+    <div class="step-box">
+        <h3 data-tr="Kathara 3D" data-en="Kathara 3D">Kathara 3D</h3>
+        <img src="images/kathara3d.png" alt="Kathara 3D" class="screen-img">
+        <p data-tr="Merkez alandaki 3D gorunum. Solfeggio frekanslari agac veya Tesla torus koordinatlarinda. Fare ile dondurme, zoom. Merkaba piramitleri (Compound of Three Tetrahedra) ve Vitruvian Man overlay. Canli frekans centroid gostergesi. AZ / EL / ZM / FOV sliders. Front / Top / Side / In / Auto / Hz / Exp butonlari." data-en="3D view in the center area. Solfeggio frequencies in Tree of Life or Tesla torus coordinates. Mouse rotation, zoom. Merkaba pyramids (Compound of Three Tetrahedra) and Vitruvian Man overlay. Live frequency centroid. AZ / EL / ZM / FOV sliders. Front / Top / Side / In / Auto / Hz / Exp buttons.">Merkez alandaki 3D gorunum. Solfeggio frekanslari agac veya Tesla torus koordinatlarinda. Fare ile dondurme, zoom. Merkaba piramitleri (Compound of Three Tetrahedra) ve Vitruvian Man overlay. Canli frekans centroid gostergesi. AZ / EL / ZM / FOV sliders. Front / Top / Side / In / Auto / Hz / Exp butonlari.</p>
+    </div>
+
+    <div class="step-box">
+        <h3 data-tr="Spektrum Goruntuleme" data-en="Spectrum View">Spektrum Goruntuleme</h3>
+        <img src="images/spectrum.png" alt="Spectrum" class="screen-img">
+        <p data-tr="Aktif frekanslarin canli spektrum gorunumu. SPEC 1 (Avatar renklendirme) ve SPEC 2 (Chakra renklendirme) modlari." data-en="Live spectrum view of active frequencies. SPEC 1 (Avatar coloring) and SPEC 2 (Chakra coloring) modes.">Aktif frekanslarin canli spektrum gorunumu. SPEC 1 (Avatar renklendirme) ve SPEC 2 (Chakra renklendirme) modlari.</p>
+    </div>
+
+    <div class="step-box">
+        <h3 data-tr="Sacred Geometry — Enneagram" data-en="Sacred Geometry — Enneagram">Sacred Geometry — Enneagram</h3>
+        <img src="images/enneagram.png" alt="Enneagram" class="screen-img">
+        <p data-tr="Enneagram 9 tip dairesi ve ic baglantilari. Vitruvian Man overlay ile insan anatomisi frekanslara esdestiriliyor." data-en="Enneagram 9-type circle and inner connections. Vitruvian Man overlay maps human anatomy to frequencies.">Enneagram 9 tip dairesi ve ic baglantilari. Vitruvian Man overlay ile insan anatomisi frekanslara esdestiriliyor.</p>
+    </div>
+
+    <div class="step-box">
+        <h3 data-tr="Harmonics (Fibonacci Spiral)" data-en="Harmonics (Fibonacci Spiral)">Harmonics (Fibonacci Spiral)</h3>
+        <img src="images/haarmonics.png" alt="Harmonics" class="screen-img">
+        <p data-tr="Fibonacci sarmal gorsellestirmesi. Aktif seslerin harmonik dagilimlari canli gosterilir." data-en="Fibonacci spiral visualization. Harmonic distributions of active voices shown live.">Fibonacci sarmal gorsellestirmesi. Aktif seslerin harmonik dagilimlari canli gosterilir.</p>
+    </div>
+
+    <div class="step-box">
+        <h3 data-tr="Lotus / Polar / Scope" data-en="Lotus / Polar / Scope">Lotus / Polar / Scope</h3>
+        <img src="images/lotus.png" alt="Lotus" class="screen-img">
+        <p data-tr="VIZ sekmesinden 7 yuzebilir pencere acilabilir: Lotus animasyonu, Polar Rose, Osiloskov, Spektrum, Sacred Geometry, Harmonics, Kathara floating." data-en="7 floating windows accessible from VIZ tab: Lotus animation, Polar Rose, Oscilloscope, Spectrum, Sacred Geometry, Harmonics, Kathara floating.">VIZ sekmesinden 7 yuzebilir pencere acilabilir: Lotus animasyonu, Polar Rose, Osiloskov, Spektrum, Sacred Geometry, Harmonics, Kathara floating.</p>
+    </div>
+
+    <!-- FREQ CALCULATOR -->
+    <h2 data-tr="Frekans Hesap Makinesi" data-en="Frequency Calculator">Frekans Hesap Makinesi <span class="std-badge">Standard + Pro</span></h2>
+
+    <div class="step-box">
+        <h3 data-tr="CALC Butonu — Media Creator" data-en="CALC Button — Media Creator">CALC Butonu — Media Creator</h3>
+        <img src="images/calculator.png" alt="Freq Calculator" class="screen-img">
+        <p data-tr="Media Creator panelindeki &lt;strong&gt;CALC&lt;/strong&gt; butonuna tiklayarak Sacred Frekans Hesap Makinesini acin." data-en="Click the &lt;strong&gt;CALC&lt;/strong&gt; button in the Media Creator panel to open the Sacred Frequency Calculator."><strong>CALC</strong> butonuna tiklayarak Sacred Frekans Hesap Makinesini acin.</p>
+        <ul>
+            <li data-tr="Frekans alanina tiklayarak deger girin (Enter ile onayla, Esc ile iptal)" data-en="Click the frequency field to type a value (Enter to confirm, Esc to cancel)">Frekans alanina tiklayarak deger girin (Enter ile onayla, Esc ile iptal)</li>
+            <li data-tr="+Oct / -Oct: Oktav katlama / yari (x2 / /2)" data-en="+Oct / -Oct: Octave double/half (x2 / /2)">+Oct / -Oct: Oktav katlama / yari (x2 / /2)</li>
+            <li data-tr="xPHI / /PHI: Altin Oran carpma / bolme" data-en="xPHI / /PHI: Golden Ratio multiply / divide">xPHI / /PHI: Altin Oran carpma / bolme</li>
+            <li data-tr="xPI, xR2, xR3, xR5: Pi, Kok2, Kok3, Kok5 ile islem" data-en="xPI, xR2, xR3, xR5: Operations with Pi, Sqrt2, Sqrt3, Sqrt5">xPI, xR2, xR3, xR5: Pi, Kok2, Kok3, Kok5 ile islem</li>
+            <li data-tr="x2..x21, /2../21: Fibonacci ve Tesla harmonikleri" data-en="x2..x21, /2../21: Fibonacci and Tesla harmonics">x2..x21, /2../21: Fibonacci ve Tesla harmonikleri</li>
+            <li data-tr="UNDO: Son islemi geri al. CLR: 440 Hz'e sifirla" data-en="UNDO: Undo last operation. CLR: Reset to 440 Hz">UNDO: Son islemi geri al. CLR: 440 Hz'e sifirla</li>
+        </ul>
+    </div>
+
+    <!-- KEYBOARD SHORTCUTS -->
+    <h2 data-tr="Klavye Kisayollari" data-en="Keyboard Shortcuts">Klavye Kisayollari</h2>
+
+    <table style="width:100%;border-collapse:collapse;margin:1rem 0">
+        <tr>
+            <td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span class="key">1</span></td>
+            <td style="padding:8px;color:var(--t2);border-bottom:1px solid var(--border)" data-tr="Pure Snap tuning" data-en="Pure Snap tuning">Pure Snap tuning</td>
+        </tr>
+        <tr>
+            <td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span class="key">2</span></td>
+            <td style="padding:8px;color:var(--t2);border-bottom:1px solid var(--border)" data-tr="Sacred Optimizer" data-en="Sacred Optimizer">Sacred Optimizer</td>
+        </tr>
+        <tr>
+            <td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span class="key">Space</span></td>
+            <td style="padding:8px;color:var(--t2);border-bottom:1px solid var(--border)" data-tr="Oynat/Durdur" data-en="Play/Stop">Oynat/Durdur</td>
+        </tr>
+        <tr>
+            <td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span class="key">H</span></td>
+            <td style="padding:8px;color:var(--t2);border-bottom:1px solid var(--border)" data-tr="Heart Activation" data-en="Heart Activation">Heart Activation</td>
+        </tr>
+        <tr>
+            <td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span class="key">T</span></td>
+            <td style="padding:8px;color:var(--t2);border-bottom:1px solid var(--border)" data-tr="Trinity Mode" data-en="Trinity Mode">Trinity Mode</td>
+        </tr>
+    </table>
+
+    <div class="warn-box" style="margin-top:3rem">
+        <p data-tr="&lt;strong&gt;Onemli:&lt;/strong&gt; Kulaklik kullanin. Binaural beat ancak kulaklikla etki gosterir. Epilepsi hastalarinin doktora danismasi onemle tavsiye edilir. &lt;a href='disclaimer.html' style='color:var(--red)'&gt;Yasal uyarilar&lt;/a&gt;" data-en="&lt;strong&gt;Important:&lt;/strong&gt; Use headphones. Binaural beats only work with headphones. Epilepsy patients are strongly advised to consult a doctor. &lt;a href='disclaimer.html' style='color:var(--red)'&gt;Legal disclaimers&lt;/a&gt;"><strong>Onemli:</strong> Kulaklik kullanin. Binaural beat ancak kulaklikla etki gosterir. Epilepsi hastalarinin doktora danismasi onemle tavsiye edilir. <a href="disclaimer.html" style="color:var(--red)">Yasal uyarilar</a></p>
+    </div>
+
+</div>
+
+<footer>
+    <div class="foot-links">
+        <a href="index.html" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a>
+        <a href="features.html" data-tr="Ozellikler" data-en="Features">Ozellikler</a>
+        <a href="discovery.html" data-tr="Kesif" data-en="Discovery">Kesif</a>
+        <a href="architecture.html" data-tr="Mimari" data-en="Architecture">Mimari</a>
+        <a href="disclaimer.html" data-tr="Yasal" data-en="Legal">Yasal</a>
+    </div>
+    <p>&copy; 2026 QuantumSynth — Secrets of Quantum Waves V3.5 Pro | Murat Tutu</p>
+    <p class="foot-warn" data-tr="Bu bir hipotez ve arastirma projesidir. Tibbi cihaz degildir." data-en="This is a hypothesis and research project. It is not a medical device.">Bu bir hipotez ve arastirma projesidir. Tibbi cihaz degildir.</p>
+</footer>
+
+<script>
+function toggleLang() {
+    const cur = localStorage.getItem('qs-lang') || 'tr';
+    const next = cur === 'tr' ? 'en' : 'tr';
+    localStorage.setItem('qs-lang', next);
+    applyLang(next);
+}
+function applyLang(lang) {
+    document.querySelectorAll('[data-'+lang+']').forEach(el => {
+        const val = el.getAttribute('data-'+lang);
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.value = val;
+        else el.innerHTML = val;
+    });
+    const btn = document.querySelector('.lang-btn');
+    if (btn) btn.textContent = lang === 'tr' ? 'EN' : 'TR';
+    document.documentElement.lang = lang;
+}
+document.addEventListener('DOMContentLoaded', () => applyLang(localStorage.getItem('qs-lang') || 'tr'));
+</script>
+
+</body>
+</html>
