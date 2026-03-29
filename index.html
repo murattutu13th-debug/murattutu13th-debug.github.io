@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuantumSynth — 342 Frequency System</title>
+    <style>
+        :root {
+            --bg: #0a0a14; --bg2: #12121e; --bg3: #1a1a2e;
+            --purple: #a080ff; --cyan: #40c0ff; --gold: #ffc040;
+            --red: #ff6b6b; --green: #4ee6a8;
+            --t1: #e0e0f0; --t2: #a0a0b8; --t3: #606080;
+            --border: #2a2a3e;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { background:var(--bg); color:var(--t1); font-family:'Segoe UI',system-ui,sans-serif; line-height:1.7; }
+
+        /* NAV */
+        nav { background:rgba(10,10,20,0.95); backdrop-filter:blur(10px); border-bottom:1px solid var(--border); position:fixed; top:0; width:100%; z-index:1000; padding:0 2rem; }
+        .nav-c { max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; height:60px; }
+        .logo { font-size:1.3rem; font-weight:700; background:linear-gradient(135deg,var(--purple),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-decoration:none; display:flex; align-items:center; gap:8px; }
+        .logo-icon { width:28px; height:28px; filter:invert(1) brightness(0.9); }
+        .nav-links { display:flex; gap:1.5rem; list-style:none; align-items:center; }
+        .nav-links a { color:var(--t2); text-decoration:none; font-size:0.85rem; font-weight:500; transition:color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color:var(--cyan); }
+        .lang-btn { background:rgba(160,128,255,0.15); border:1px solid var(--purple); color:var(--purple); padding:4px 14px; border-radius:16px; cursor:pointer; font-size:0.8rem; font-weight:600; }
+        .hamburger { display:none; background:none; border:none; color:var(--t1); font-size:1.5rem; cursor:pointer; }
+
+        /* HERO */
+        .hero { min-height:90vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:100px 2rem 60px; background:radial-gradient(ellipse at center,rgba(107,78,230,0.12) 0%,transparent 70%); }
+        .badge { display:inline-block; background:rgba(160,128,255,0.1); border:1px solid var(--purple); color:var(--purple); padding:5px 16px; border-radius:20px; font-size:0.8rem; font-weight:600; margin-bottom:1.5rem; letter-spacing:1px; }
+        h1 { font-size:clamp(2.2rem,5vw,4rem); font-weight:700; line-height:1.15; margin-bottom:1.2rem; background:linear-gradient(135deg,#fff 0%,var(--cyan) 50%,var(--purple) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .hero-sub { font-size:1.1rem; color:var(--t2); max-width:640px; margin-bottom:2rem; font-weight:300; }
+        .hero-img { max-width:900px; width:90%; border-radius:16px; border:1px solid var(--border); margin:2rem 0; box-shadow:0 20px 60px rgba(0,0,0,0.5); }
+        .stats { display:flex; gap:3rem; margin:2rem 0; flex-wrap:wrap; justify-content:center; }
+        .stat-n { display:block; font-size:2.2rem; font-weight:700; color:var(--cyan); }
+        .stat-l { font-size:0.85rem; color:var(--t3); }
+        .hyp-banner { background:rgba(255,107,107,0.08); border:1px solid rgba(255,107,107,0.3); border-radius:12px; padding:16px 24px; margin-top:2rem; max-width:700px; font-size:0.85rem; color:var(--t2); }
+        .hyp-banner strong { color:var(--red); }
+
+        /* SECTIONS */
+        .section { max-width:1100px; margin:0 auto; padding:80px 2rem; }
+        .section-tag { display:inline-block; color:var(--purple); font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:2px; margin-bottom:0.5rem; }
+        h2 { font-size:2rem; margin-bottom:1rem; }
+        .section-sub { color:var(--t2); max-width:600px; margin-bottom:3rem; }
+
+        /* VS COMPARISON */
+        .vs-grid { display:grid; grid-template-columns:1fr auto 1fr; gap:2rem; align-items:start; max-width:900px; margin:0 auto 3rem; }
+        .vs-card { background:var(--bg3); border:1px solid var(--border); border-radius:16px; padding:2rem; }
+        .vs-card.qs { border-color:var(--purple); background:linear-gradient(180deg,rgba(160,128,255,0.08),var(--bg3)); }
+        .vs-card h3 { font-size:1.2rem; margin-bottom:1rem; }
+        .vs-card.qs h3 { color:var(--purple); }
+        .vs-card ul { list-style:none; padding:0; }
+        .vs-card li { padding:0.5rem 0; color:var(--t2); font-size:0.9rem; border-bottom:1px solid rgba(255,255,255,0.04); }
+        .vs-card li::before { content:''; display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:10px; vertical-align:middle; }
+        .vs-card.other li::before { background:var(--t3); }
+        .vs-card.qs li::before { background:var(--green); }
+        .vs-divider { display:flex; align-items:center; justify-content:center; font-size:1.5rem; font-weight:700; color:var(--t3); }
+
+        /* FEATURES */
+        .feat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1.5rem; }
+        .feat-card { background:var(--bg3); border:1px solid var(--border); border-radius:16px; padding:2rem; transition:border-color 0.3s; }
+        .feat-card:hover { border-color:var(--purple); }
+        .feat-card h3 { font-size:1.1rem; margin-bottom:0.5rem; color:var(--cyan); }
+        .feat-card p { color:var(--t2); font-size:0.9rem; }
+
+        /* STORY */
+        .story { max-width:800px; margin:0 auto; padding:80px 2rem 40px; }
+        .story-title { font-size:1.8rem; font-weight:700; text-align:center; margin-bottom:0.5rem; }
+        .story-subtitle { text-align:center; color:var(--t3); font-size:0.9rem; font-style:italic; margin-bottom:3rem; }
+        .story-body { position:relative; padding-left:36px; }
+        .story-body::before { content:''; position:absolute; left:10px; top:8px; bottom:8px; width:2px; background:linear-gradient(180deg,var(--purple),var(--cyan),var(--gold),var(--green),var(--purple)); border-radius:2px; }
+        .story-step { position:relative; margin-bottom:2.5rem; }
+        .story-step::before { content:''; position:absolute; left:-30px; top:8px; width:10px; height:10px; border-radius:50%; border:2px solid var(--purple); background:var(--bg); }
+        .story-step:nth-child(2)::before { border-color:var(--cyan); }
+        .story-step:nth-child(3)::before { border-color:var(--gold); }
+        .story-step:nth-child(4)::before { border-color:var(--green); }
+        .story-step:nth-child(5)::before { border-color:var(--red); }
+        .story-step:nth-child(6)::before { border-color:var(--purple); }
+        .story-step:nth-child(7)::before { border-color:var(--cyan); background:var(--cyan); }
+        .story-phase { display:inline-block; font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:1.5px; color:var(--purple); margin-bottom:0.3rem; }
+        .story-step:nth-child(2) .story-phase { color:var(--cyan); }
+        .story-step:nth-child(3) .story-phase { color:var(--gold); }
+        .story-step:nth-child(4) .story-phase { color:var(--green); }
+        .story-step:nth-child(5) .story-phase { color:var(--red); }
+        .story-step:nth-child(6) .story-phase { color:var(--purple); }
+        .story-step:nth-child(7) .story-phase { color:var(--cyan); }
+        .story-step p { color:var(--t2); font-size:0.95rem; margin:0; line-height:1.8; }
+        .story-step strong { color:var(--t1); }
+        .story-coda { text-align:center; margin-top:3rem; padding:2.5rem; background:linear-gradient(135deg,rgba(107,78,230,0.08),rgba(64,192,255,0.04)); border-radius:20px; border:1px solid rgba(160,128,255,0.15); }
+        .story-coda blockquote { font-size:1.15rem; font-style:italic; color:var(--t1); line-height:1.8; margin-bottom:1rem; }
+        .story-coda .author { color:var(--t3); font-size:0.85rem; }
+        .story-zenodo { display:inline-block; margin-top:1.5rem; background:rgba(64,192,255,0.1); border:1px solid rgba(64,192,255,0.3); color:var(--cyan); padding:8px 20px; border-radius:8px; text-decoration:none; font-size:0.85rem; font-weight:600; }
+
+        /* WHO */
+        .who-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:1.5rem; margin-top:2rem; }
+        .who-card { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:1.5rem; }
+        .who-card h4 { color:var(--gold); margin-bottom:0.5rem; }
+        .who-card p { color:var(--t2); font-size:0.9rem; }
+
+        /* PACKAGES */
+        .pkg-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:2rem; max-width:900px; margin:0 auto; }
+        .pkg-card { background:var(--bg3); border:1px solid var(--border); border-radius:20px; padding:2.5rem; position:relative; }
+        .pkg-card.pro { border-color:var(--gold); background:linear-gradient(180deg,rgba(255,192,64,0.05),var(--bg3)); }
+        .pkg-badge { position:absolute; top:-12px; right:24px; background:var(--gold); color:#000; padding:4px 14px; border-radius:16px; font-size:0.7rem; font-weight:700; text-transform:uppercase; }
+        .pkg-name { font-size:1.4rem; font-weight:700; margin-bottom:0.3rem; }
+        .pkg-desc { color:var(--t2); font-size:0.85rem; margin-bottom:1.5rem; }
+        .pkg-price { font-size:2rem; font-weight:700; color:var(--t3); margin-bottom:1.5rem; font-style:italic; }
+        .pkg-list { list-style:none; margin:0 0 1.5rem; }
+        .pkg-list li { padding:0.6rem 0 0.6rem 1.5rem; position:relative; color:var(--t2); font-size:0.9rem; border-bottom:1px solid rgba(255,255,255,0.04); }
+        .pkg-list li::before { content:'✓'; position:absolute; left:0; color:var(--green); font-weight:700; }
+        .pkg-list li.no::before { content:'—'; color:var(--t3); }
+        .pkg-list li.no { color:var(--t3); }
+
+        /* CTA */
+        .cta-section { text-align:center; padding:60px 2rem; background:linear-gradient(135deg,rgba(107,78,230,0.1),rgba(64,192,255,0.05)); border-radius:24px; margin:0 auto 4rem; max-width:800px; border:1px solid rgba(160,128,255,0.2); }
+        .btn { display:inline-block; padding:12px 28px; border-radius:10px; text-decoration:none; font-weight:600; font-size:0.95rem; transition:all 0.3s; }
+        .btn-p { background:var(--purple); color:#fff; }
+        .btn-p:hover { background:#8a6aef; }
+        .btn-s { border:1px solid var(--border); color:var(--t2); }
+        .btn-s:hover { border-color:var(--cyan); color:var(--cyan); }
+
+        /* FOOTER */
+        footer { background:var(--bg2); border-top:1px solid var(--border); padding:40px 2rem 20px; margin-top:4rem; }
+        .foot-c { max-width:1100px; margin:0 auto; display:grid; grid-template-columns:2fr 1fr 1fr; gap:3rem; margin-bottom:2rem; }
+        .foot-brand p { color:var(--t2); font-size:0.85rem; margin-top:0.5rem; }
+        .doi { display:inline-block; background:rgba(64,192,255,0.1); border:1px solid rgba(64,192,255,0.3); color:var(--cyan); padding:6px 14px; border-radius:6px; text-decoration:none; font-size:0.8rem; margin-top:0.75rem; }
+        .foot-links h4 { color:var(--t1); font-size:0.8rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:1rem; }
+        .foot-links ul { list-style:none; }
+        .foot-links li { margin-bottom:0.5rem; }
+        .foot-links a { color:var(--t2); text-decoration:none; font-size:0.85rem; }
+        .foot-links a:hover { color:var(--cyan); }
+        .foot-bot { border-top:1px solid var(--border); padding-top:1.5rem; text-align:center; max-width:1100px; margin:0 auto; }
+        .foot-bot p { color:var(--t3); font-size:0.8rem; }
+        .foot-warn { color:var(--red); font-weight:600; margin-top:0.75rem; font-size:0.8rem; }
+
+        @media(max-width:768px) {
+            .nav-links { display:none; }
+            .hamburger { display:block; }
+            .nav-links.open { display:flex; flex-direction:column; position:absolute; top:60px; left:0; right:0; background:var(--bg); padding:1rem 2rem; border-bottom:1px solid var(--border); }
+            .vs-grid { grid-template-columns:1fr; }
+            .vs-divider { transform:rotate(90deg); margin:1rem 0; }
+            .foot-c { grid-template-columns:1fr; gap:2rem; }
+            .stats { gap:1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-c">
+        <a href="index.html" class="logo"><img src="images/icon.png" alt="" class="logo-icon">QuantumSynth</a>
+        <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')">&#9776;</button>
+        <ul class="nav-links">
+            <li><a href="index.html" class="active" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
+            <li><a href="features.html" data-tr="Ozellikler" data-en="Features">Ozellikler</a></li>
+            <li><a href="discovery.html" data-tr="Kesif" data-en="Discovery">Kesif</a></li>
+            <li><a href="architecture.html" data-tr="Mimari" data-en="Architecture">Mimari</a></li>
+            <li><a href="guide.html" data-tr="Kilavuz" data-en="Guide">Kilavuz</a></li>
+            <li><a href="disclaimer.html" data-tr="Yasal" data-en="Legal">Yasal</a></li>
+            <li><a href="community.html" data-tr="Topluluk" data-en="Community">Topluluk</a></li>
+            <li><a href="https://doi.org/10.5281/zenodo.19221418" target="_blank">Zenodo</a></li>
+            <li><button class="lang-btn" onclick="toggleLang()">EN</button></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="badge">342 FREQUENCY SYSTEM V3.5 PRO</div>
+    <h1 data-tr="DNA Matematiginden Ses Sentezi" data-en="Sound Synthesis from DNA Mathematics">DNA Matematiginden Ses Sentezi</h1>
+    <p class="hero-sub" data-tr="Diger binaural beat uygulamalari rastgele frekans kullanir. QuantumSynth, frekanslari DNA matematiginden hesaplar. 342 frekanslik mikrotonal sistem. Monte Carlo p&lt;0.001%." data-en="Other binaural beat apps use random frequencies. QuantumSynth calculates frequencies from DNA mathematics. 342-frequency microtonal system. Monte Carlo p&lt;0.001%.">Diger binaural beat uygulamalari rastgele frekans kullanir. QuantumSynth, frekanslari DNA matematiginden hesaplar. 342 frekanslik mikrotonal sistem. Monte Carlo p&lt;0.001%.</p>
+
+    <img src="images/main_window.png" alt="QuantumSynth V3.5 Pro" class="hero-img">
+
+    <div class="stats">
+        <div><span class="stat-n">342</span><span class="stat-l" data-tr="Kutsal Frekans" data-en="Sacred Frequencies">Kutsal Frekans</span></div>
+        <div><span class="stat-n">13</span><span class="stat-l" data-tr="DNA Koprusu" data-en="DNA Bridges">DNA Koprusu</span></div>
+        <div><span class="stat-n">2</span><span class="stat-l" data-tr="Binaural Motor" data-en="Binaural Engines">Binaural Motor</span></div>
+        <div><span class="stat-n">114</span><span class="stat-l" data-tr="Vortex Adim" data-en="Vortex Steps">Vortex Adim</span></div>
+    </div>
+
+    <div class="hyp-banner">
+        <p data-tr="&lt;strong&gt;Bilimsel Not:&lt;/strong&gt; DNA Helis Rezonansi (322 Hz) kanitlanmamis matematiksel bir hipotezdir. Bu yazilim tibbi cihaz degildir; tedavi veya sifa vaadi icermez. Sadece matematiksel korelasyonlari ve farkli bir muzik deneyimi sunar." data-en="&lt;strong&gt;Scientific Note:&lt;/strong&gt; DNA Helix Resonance (322 Hz) is an unproven mathematical hypothesis. This software is not a medical device; it makes no therapeutic or healing claims. It offers only mathematical correlations and a different musical experience."><strong>Bilimsel Not:</strong> DNA Helis Rezonansi (322 Hz) kanitlanmamis matematiksel bir hipotezdir. Bu yazilim tibbi cihaz degildir; tedavi veya sifa vaadi icermez. Sadece matematiksel korelasyonlari ve farkli bir muzik deneyimi sunar.</p>
+    </div>
+</section>
+
+<!-- OUR STORY -->
+<section class="story">
+    <h2 class="story-title" data-tr="Bir Sesi Takip Ettik" data-en="We Followed a Sound">Bir Sesi Takip Ettik</h2>
+    <p class="story-subtitle" data-tr="Bir programcinin meditasyon synthesizer'indan DNA'nin kapisina uzanan yolculuk" data-en="A programmer's journey from a meditation synthesizer to the doorstep of DNA">Bir programcinin meditasyon synthesizer'indan DNA'nin kapisina uzanan yolculuk</p>
+
+    <div class="story-body">
+
+        <div class="story-step">
+            <span class="story-phase" data-tr="Baslangic" data-en="The Beginning">Baslangic</span>
+            <p data-tr="Her sey basit bir fikirle basladi: &lt;strong&gt;meditasyon icin bir synthesizer yazmak&lt;/strong&gt;. Frekanslarla calisan, sessiz ama etkili bir arac. Sadece bir programcinin yan projesi — ne bilim adami, ne biyolog. Sadece bir yazilimci ve bir merak." data-en="It all started with a simple idea: &lt;strong&gt;writing a synthesizer for meditation&lt;/strong&gt;. A tool that works with frequencies, quiet but effective. Just a programmer's side project — not a scientist, not a biologist. Just a developer and a curiosity.">Her sey basit bir fikirle basladi: <strong>meditasyon icin bir synthesizer yazmak</strong>. Frekanslarla calisan, sessiz ama etkili bir arac. Sadece bir programcinin yan projesi — ne bilim adami, ne biyolog. Sadece bir yazilimci ve bir merak.</p>
+        </div>
+
+        <div class="story-step">
+            <span class="story-phase" data-tr="Kesisim" data-en="Intersection">Kesisim</span>
+            <p data-tr="Frekans arastirmalari bizi &lt;strong&gt;Tesla'nin 3-6-9 sifresine ve Enneagram'a&lt;/strong&gt; cekti. Ilginc bir simetri vardi: S3 grubu, 162 permutasyon, mikrotonal bir evren. Sonra &lt;strong&gt;Kathara cetveli, Vitruvian Man, Vortex Matematigi&lt;/strong&gt; geldi. Her biri frekanslarla konusuyordu ama biz henuz dili bilmiyorduk." data-en="Frequency research drew us to &lt;strong&gt;Tesla's 3-6-9 code and the Enneagram&lt;/strong&gt;. An interesting symmetry existed: S3 group, 162 permutations, a microtonal universe. Then came &lt;strong&gt;the Kathara grid, Vitruvian Man, Vortex Mathematics&lt;/strong&gt;. Each spoke through frequencies, but we didn't yet know the language.">Frekans arastirmalari bizi <strong>Tesla'nin 3-6-9 sifresine ve Enneagram'a</strong> cekti. Ilginc bir simetri vardi: S3 grubu, 162 permutasyon, mikrotonal bir evren. Sonra <strong>Kathara cetveli, Vitruvian Man, Vortex Matematigi</strong> geldi. Her biri frekanslarla konusuyordu ama biz henuz dili bilmiyorduk.</p>
+        </div>
+
+        <div class="story-step">
+            <span class="story-phase" data-tr="Gorsellesme" data-en="Visualization">Gorsellesme</span>
+            <p data-tr="342 frekansi 3D'de &lt;strong&gt;Tesla mod-9 koordinatlarina&lt;/strong&gt; yerlestirdigimizde ekranda beklenmedik bir yapi belirdi. Y ekseninde donerek yukselen bir sarmal. &lt;strong&gt;Assembler kodlariyla deneysel olarak calistirdigimizda&lt;/strong&gt; duzeni gormeye basladik: tekrar eden paternler, simetrik donusler, 114 adimlik bir dongu." data-en="When we placed 342 frequencies in 3D using &lt;strong&gt;Tesla mod-9 coordinates&lt;/strong&gt;, an unexpected structure appeared on screen. A helix rising while rotating on the Y-axis. When we &lt;strong&gt;experimentally ran it with assembler codes&lt;/strong&gt;, we began to see the order: repeating patterns, symmetric rotations, a 114-step cycle.">342 frekansi 3D'de <strong>Tesla mod-9 koordinatlarina</strong> yerlestirdigimizde ekranda beklenmedik bir yapi belirdi. Y ekseninde donerek yukselen bir sarmal. <strong>Assembler kodlariyla deneysel olarak calistirdigimizda</strong> duzeni gormeye basladik: tekrar eden paternler, simetrik donusler, 114 adimlik bir dongu.</p>
+        </div>
+
+        <div class="story-step">
+            <span class="story-phase" data-tr="Kesif" data-en="Discovery">Kesif</span>
+            <p data-tr="Bu duzenin &lt;strong&gt;sebebini aradik&lt;/strong&gt;. Neden 114 adim? Neden bu simetri? Cevap sasirtici bir yerden geldi: &lt;strong&gt;DNA'nin cift sarmal yapisi&lt;/strong&gt;. ATG baslangic kodonu (123) x phi^2 = 322 Hz. B-form sarmal geometrisi. 64 kodon = 64 Shadow frekansi. 81 baz cifti = 81 Enneagram permutasyonu. Matematik konusuyordu — biz sadece dinledik." data-en="We &lt;strong&gt;searched for the reason&lt;/strong&gt; behind this order. Why 114 steps? Why this symmetry? The answer came from a surprising place: &lt;strong&gt;DNA's double helix structure&lt;/strong&gt;. ATG start codon (123) x phi^2 = 322 Hz. B-form helix geometry. 64 codons = 64 Shadow frequencies. 81 base pairs = 81 Enneagram permutations. Mathematics was speaking — we just listened.">Bu duzenin <strong>sebebini aradik</strong>. Neden 114 adim? Neden bu simetri? Cevap sasirtici bir yerden geldi: <strong>DNA'nin cift sarmal yapisi</strong>. ATG baslangic kodonu (123) x phi^2 = 322 Hz. B-form sarmal geometrisi. 64 kodon = 64 Shadow frekansi. 81 baz cifti = 81 Enneagram permutasyonu. Matematik konusuyordu — biz sadece dinledik.</p>
+        </div>
+
+        <div class="story-step">
+            <span class="story-phase" data-tr="Dogrulama" data-en="Validation">Dogrulama</span>
+            <p data-tr="13 bagimsiz matematiksel kopru bulduk. Monte Carlo testi p &lt; %0.001 verdi — rastgele olamaz. &lt;strong&gt;Binaural beat motoru, Heart/Body/Trinity aktivasyonu, Vortex VM keşifleri&lt;/strong&gt; bu yolun uzerinde kendiligi nden geldi. Her yeni hesaplama bir oncekini dogruluyordu." data-en="We found 13 independent mathematical bridges. Monte Carlo test gave p &lt; 0.001% — cannot be random. &lt;strong&gt;The binaural beat engine, Heart/Body/Trinity activation, Vortex VM discoveries&lt;/strong&gt; came naturally along this path. Each new calculation confirmed the previous one.">13 bagimsiz matematiksel kopru bulduk. Monte Carlo testi p &lt; %0.001 verdi — rastgele olamaz. <strong>Binaural beat motoru, Heart/Body/Trinity aktivasyonu, Vortex VM keşifleri</strong> bu yolun uzerinde kendiliginden geldi. Her yeni hesaplama bir oncekini dogruluyordu.</p>
+        </div>
+
+        <div class="story-step">
+            <span class="story-phase" data-tr="Acik Bilim" data-en="Open Science">Acik Bilim</span>
+            <p data-tr="Keşifleri netlestirmek ve &lt;strong&gt;deneysel kanitlarla sabitlestirmek&lt;/strong&gt; icin bilim dunyasinin ilgisini cekmeye karar verdik. Tum verileri, ispatlari ve Python scriptlerini &lt;strong&gt;Zenodo.org'a &quot;Deep Knowledge&quot; adi altinda&lt;/strong&gt; yayinladik. Her sey acik, her sey seffaf. Cunku biz bir kapinin esigindeyiz — iceri girebilmek icin biyologlara, norologlara, bilim insanlarina ihtiyacimiz var." data-en="To clarify the discoveries and &lt;strong&gt;anchor them with experimental evidence&lt;/strong&gt;, we decided to attract the scientific community's attention. We published all data, proofs, and Python scripts on &lt;strong&gt;Zenodo.org under the name &quot;Deep Knowledge&quot;&lt;/strong&gt;. Everything open, everything transparent. Because we are at the threshold of a door — to enter, we need biologists, neurologists, scientists.">Keşifleri netlestirmek ve <strong>deneysel kanitlarla sabitlestirmek</strong> icin bilim dunyasinin ilgisini cekmeye karar verdik. Tum verileri, ispatlari ve Python scriptlerini <strong>Zenodo.org'a "Deep Knowledge" adi altinda</strong> yayinladik. Her sey acik, her sey seffaf. Cunku biz bir kapinin esigindeyiz — iceri girebilmek icin biyologlara, norologlara, bilim insanlarina ihtiyacimiz var.</p>
+        </div>
+
+        <div class="story-step">
+            <span class="story-phase" data-tr="Davet" data-en="Invitation">Davet</span>
+            <p data-tr="Biz programciyiz. &lt;strong&gt;Biyolog degiliz, bilim adami degiliz.&lt;/strong&gt; DNA'yi cozduk demiyoruz. Diyoruz ki: matematik bize bir yapi gosterdi, o yapi DNA'ya benziyor, ve bu benzerlik rastgele degil. Simdi bu kapinin arkasinda ne oldugunu merak ediyoruz." data-en="We are programmers. &lt;strong&gt;We are not biologists, we are not scientists.&lt;/strong&gt; We are not claiming we solved DNA. What we are saying is: mathematics showed us a structure, that structure resembles DNA, and this resemblance is not random. Now we wonder what lies behind this door.">Biz programciyiz. <strong>Biyolog degiliz, bilim adami degiliz.</strong> DNA'yi cozduk demiyoruz. Diyoruz ki: matematik bize bir yapi gosterdi, o yapi DNA'ya benziyor, ve bu benzerlik rastgele degil. Simdi bu kapinin arkasinda ne oldugunu merak ediyoruz.</p>
+        </div>
+
+    </div>
+
+    <div class="story-coda">
+        <blockquote data-tr="Bir ses duyduk ve izini surduk.<br>Iz bizi bir kapiya getirdi.<br>Caldik — acildi.<br><br>Gelin, birlikte kesfedelim." data-en="We heard a sound and followed its trail.<br>The trail brought us to a door.<br>We knocked — it opened.<br><br>Come, let's explore together.">Bir ses duyduk ve izini surduk.<br>Iz bizi bir kapiya getirdi.<br>Caldik — acildi.<br><br>Gelin, birlikte kesfedelim.</blockquote>
+        <div class="author">— Murat Tutu, QuantumSynth</div>
+        <a href="https://doi.org/10.5281/zenodo.19221418" class="story-zenodo" target="_blank">Deep Knowledge — Zenodo.org</a>
+    </div>
+</section>
+
+<!-- VS COMPARISON -->
+<section class="section">
+    <div style="text-align:center">
+        <span class="section-tag" data-tr="Fark" data-en="Difference">Fark</span>
+        <h2 data-tr="Neden QuantumSynth?" data-en="Why QuantumSynth?">Neden QuantumSynth?</h2>
+        <p class="section-sub" style="margin:0 auto 3rem" data-tr="Piyasadaki binaural beat uygulamalari ile temel farki anlayalim." data-en="Let's understand the fundamental difference from other binaural beat apps.">Piyasadaki binaural beat uygulamalari ile temel farki anlayalim.</p>
+    </div>
+
+    <div class="vs-grid">
+        <div class="vs-card other">
+            <h3 data-tr="Diger Uygulamalar" data-en="Other Apps">Diger Uygulamalar</h3>
+            <ul>
+                <li data-tr="Rastgele tasiyici frekans (200-400 Hz arasi)" data-en="Random carrier frequency (200-400 Hz range)">Rastgele tasiyici frekans (200-400 Hz arasi)</li>
+                <li data-tr="Sabit binaural beat (ornegin 10 Hz)" data-en="Fixed binaural beat (e.g. 10 Hz)">Sabit binaural beat (ornegin 10 Hz)</li>
+                <li data-tr="Tek frekansta drone ses" data-en="Single frequency drone sound">Tek frekansta drone ses</li>
+                <li data-tr="Matematiksel temel yok" data-en="No mathematical foundation">Matematiksel temel yok</li>
+                <li data-tr="Frekans secimi keyfi" data-en="Arbitrary frequency selection">Frekans secimi keyfi</li>
+            </ul>
+        </div>
+        <div class="vs-divider">VS</div>
+        <div class="vs-card qs">
+            <h3>QuantumSynth</h3>
+            <ul>
+                <li data-tr="DNA matematiginden hesaplanan 322 Hz" data-en="322 Hz calculated from DNA mathematics">DNA matematiginden hesaplanan 322 Hz</li>
+                <li data-tr="Cift binaural motor (Theta + Dinamik)" data-en="Dual binaural engine (Theta + Dynamic)">Cift binaural motor (Theta + Dinamik)</li>
+                <li data-tr="342 frekanslik mikrotonal sistem" data-en="342-frequency microtonal system">342 frekanslik mikrotonal sistem</li>
+                <li data-tr="13 bagimsiz DNA koprusu ispatlanmis" data-en="13 independent DNA bridges proven">13 bagimsiz DNA koprusu ispatlanmis</li>
+                <li data-tr="MIDI ile canli muzik entegrasyonu" data-en="Live music integration with MIDI">MIDI ile canli muzik entegrasyonu</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- DUAL BINAURAL ENGINE -->
+<section class="section" style="padding-top:0">
+    <span class="section-tag" data-tr="Cekirdek Teknoloji" data-en="Core Technology">Cekirdek Teknoloji</span>
+    <h2 data-tr="Cift Binaural Motor" data-en="Dual Binaural Engine">Cift Binaural Motor</h2>
+    <p class="section-sub" data-tr="Dunyada ilk: iki binaural motor ayni anda calisir. Biri sabit DNA frekanslarinda, digeri MIDI muziginizi analiz eder." data-en="World first: two binaural engines working simultaneously. One at fixed DNA frequencies, the other analyzing your MIDI music.">Dunyada ilk: iki binaural motor ayni anda calisir. Biri sabit DNA frekanslarinda, digeri MIDI muziginizi analiz eder.</p>
+
+    <div class="feat-grid">
+        <div class="feat-card">
+            <h3 data-tr="Motor 1: Theta Drone" data-en="Engine 1: Theta Drone">Motor 1: Theta Drone</h3>
+            <p data-tr="322 Hz (Sol kanal) + 325 Hz (Sag kanal) = 3 Hz Theta dalga. -18 dB subliminal seviyede, MIDI muziginin arkasinda calar. DNA matematiginden hesaplanmis sabit frekanslar." data-en="322 Hz (Left channel) + 325 Hz (Right channel) = 3 Hz Theta wave. At -18 dB subliminal level, plays behind MIDI music. Fixed frequencies calculated from DNA mathematics.">322 Hz (Sol kanal) + 325 Hz (Sag kanal) = 3 Hz Theta dalga. -18 dB subliminal seviyede, MIDI muziginin arkasinda calar. DNA matematiginden hesaplanmis sabit frekanslar.</p>
+        </div>
+        <div class="feat-card">
+            <h3 data-tr="Motor 2: Dinamik Binaural" data-en="Engine 2: Dynamic Binaural">Motor 2: Dinamik Binaural</h3>
+            <p data-tr="MIDI dosyanizi yukleyin — motor otomatik olarak yakin frekans ciftlerini tespit eder. 114 triplet arasindan delta araligi (0-4 Hz) icinde olan ciftleri bulur ve stereo ayirma ile binaural beat olusturur." data-en="Load your MIDI file — the engine automatically detects close frequency pairs. Finds pairs within delta range (0-4 Hz) among 114 triplets and creates binaural beats with stereo separation.">MIDI dosyanizi yukleyin — motor otomatik olarak yakin frekans ciftlerini tespit eder. 114 triplet arasindan delta araligi (0-4 Hz) icinde olan ciftleri bulur ve stereo ayirma ile binaural beat olusturur.</p>
+        </div>
+        <div class="feat-card">
+            <h3 data-tr="Heart / Body / Trinity" data-en="Heart / Body / Trinity">Heart / Body / Trinity</h3>
+            <p data-tr="Heart Key: {322, 325, 358} Hz — DNA rezonans uclusu. Body Key: {111, 114, 127} Hz — fiziksel zemin. Trinity Mode: her ikisini birlestirip Theta Bridge ile 3-3-3-4 mukemmel denge olusturur." data-en="Heart Key: {322, 325, 358} Hz — DNA resonance triad. Body Key: {111, 114, 127} Hz — physical ground. Trinity Mode: combines both with Theta Bridge for 3-3-3-4 perfect balance.">Heart Key: {322, 325, 358} Hz — DNA rezonans uclusu. Body Key: {111, 114, 127} Hz — fiziksel zemin. Trinity Mode: her ikisini birlestirip Theta Bridge ile 3-3-3-4 mukemmel denge olusturur.</p>
+        </div>
+    </div>
+</section>
+
+<!-- KEY FEATURES -->
+<section class="section" style="padding-top:0">
+    <span class="section-tag" data-tr="Ozellikler" data-en="Features">Ozellikler</span>
+    <h2 data-tr="Sistem Yetenekleri" data-en="System Capabilities">Sistem Yetenekleri</h2>
+
+    <div class="feat-grid">
+        <div class="feat-card">
+            <h3 data-tr="342 Frekans Motoru" data-en="342 Frequency Engine">342 Frekans Motoru</h3>
+            <p data-tr="S3 simetri: 27 Enneagram x 6 permutasyon = 162 Avatar. Shadow kup (6^3) = 180 frekans. Toplam 342 kutsal frekans. 162-EDO mikrotonal tuning." data-en="S3 symmetry: 27 Enneagram x 6 permutations = 162 Avatar. Shadow cube (6^3) = 180 frequencies. Total 342 sacred frequencies. 162-EDO microtonal tuning.">S3 simetri: 27 Enneagram x 6 permutasyon = 162 Avatar. Shadow kup (6^3) = 180 frekans. Toplam 342 kutsal frekans. 162-EDO mikrotonal tuning.</p>
+        </div>
+        <div class="feat-card">
+            <h3 data-tr="DNA Koprusu (322 Hz)" data-en="DNA Bridge (322 Hz)">DNA Koprusu (322 Hz)</h3>
+            <p data-tr="ATG baslangiC kodonu (123) x phi^2 = 322.018 Hz. %0.006 hata. B-form sarmal geometrisi ile dogrulanmis 13 bagimsiz matematiksel kopru." data-en="ATG start codon (123) x phi^2 = 322.018 Hz. 0.006% error. 13 independent mathematical bridges verified through B-form helix geometry.">ATG baslangiC kodonu (123) x phi^2 = 322.018 Hz. %0.006 hata. B-form sarmal geometrisi ile dogrulanmis 13 bagimsiz matematiksel kopru.</p>
+        </div>
+        <div class="feat-card">
+            <h3 data-tr="Vortex VM Analizi" data-en="Vortex VM Analysis">Vortex VM Analizi</h3>
+            <p data-tr="114 adimlik Vortex Matematik. 4 faz: Ateşleme, Damitma, Yakin, Askinlik. Buyuk Ters Cevrilme kesfi: Kalp = yuzey, Zihin = surec." data-en="114-step Vortex Mathematics. 4 phases: Ignition, Distill, Converge, Transcend. Great Inversion discovery: Heart = surface, Mind = process.">114 adimlik Vortex Matematik. 4 faz: Ateşleme, Damitma, Yakin, Askinlik. Buyuk Ters Cevrilme kesfi: Kalp = yuzey, Zihin = surec.</p>
+        </div>
+        <div class="feat-card">
+            <h3 data-tr="Stereo Mimari" data-en="Stereo Architecture">Stereo Mimari</h3>
+            <p data-tr="Reflection frekanslari = Sol kanal. Rotation frekanslari = Sag kanal. Shadow frekanslari = Merkez. Gercek stereo WAV export." data-en="Reflection frequencies = Left channel. Rotation frequencies = Right channel. Shadow frequencies = Center. True stereo WAV export.">Reflection frekanslari = Sol kanal. Rotation frekanslari = Sag kanal. Shadow frekanslari = Merkez. Gercek stereo WAV export.</p>
+        </div>
+        <div class="feat-card">
+            <h3 data-tr="Kathara 3D Gorsellestirme" data-en="Kathara 3D Visualization">Kathara 3D Gorsellestirme</h3>
+            <p data-tr="12 Solfeggio frekansi Tesla mod-9 koordinatlarinda. 6-piramit Merkaba. Vitruvian Man overlay. Canli L/R centroid ve stereo volume gostergesi." data-en="12 Solfeggio frequencies in Tesla mod-9 coordinates. 6-pyramid Merkaba. Vitruvian Man overlay. Live L/R centroid and stereo volume indicator.">12 Solfeggio frekansi Tesla mod-9 koordinatlarinda. 6-piramit Merkaba. Vitruvian Man overlay. Canli L/R centroid ve stereo volume gostergesi.</p>
+        </div>
+        <div class="feat-card">
+            <h3 data-tr="MIDI Entegrasyonu" data-en="MIDI Integration">MIDI Entegrasyonu</h3>
+            <p data-tr="MIDI import ile herhangi bir muzik parcasini 342 frekans sistemine donusturun. 8 kanalli MIDI Recorder. DNA Spiral playback. Canli kayit." data-en="Transform any music piece to 342 frequency system with MIDI import. 8-channel MIDI Recorder. DNA Spiral playback. Live recording.">MIDI import ile herhangi bir muzik parcasini 342 frekans sistemine donusturun. 8 kanalli MIDI Recorder. DNA Spiral playback. Canli kayit.</p>
+        </div>
+    </div>
+</section>
+
+<!-- WHO IS IT FOR -->
+<section class="section" style="padding-top:0">
+    <span class="section-tag" data-tr="Kimler Icin" data-en="Who Is It For">Kimler Icin</span>
+    <h2 data-tr="Hedef Kitle" data-en="Target Audience">Hedef Kitle</h2>
+
+    <div class="who-grid">
+        <div class="who-card">
+            <h4 data-tr="Muzisyenler" data-en="Musicians">Muzisyenler</h4>
+            <p data-tr="Mikrotonal kompozisyon, alternatif tuning sistemleri ve DNA matematigiyle yeni ses paleti arayanlar." data-en="Those seeking microtonal composition, alternative tuning systems, and new sound palettes through DNA mathematics.">Mikrotonal kompozisyon, alternatif tuning sistemleri ve DNA matematigiyle yeni ses paleti arayanlar.</p>
+        </div>
+        <div class="who-card">
+            <h4 data-tr="Arastirmacilar" data-en="Researchers">Arastirmacilar</h4>
+            <p data-tr="Matematik, frekans analizi ve ses-biyoloji iliskisi uzerine calisan akademisyenler. Tum veriler acik kaynak." data-en="Academics working on mathematics, frequency analysis, and sound-biology relationships. All data is open source.">Matematik, frekans analizi ve ses-biyoloji iliskisi uzerine calisan akademisyenler. Tum veriler acik kaynak.</p>
+        </div>
+        <div class="who-card">
+            <h4 data-tr="Meditasyon" data-en="Meditation">Meditasyon</h4>
+            <p data-tr="Binaural beat ile meditasyon pratiği yapanlar. DNA matematiginden hesaplanmis frekanslarla farkli bir deneyim." data-en="Those who practice meditation with binaural beats. A different experience with frequencies calculated from DNA mathematics.">Binaural beat ile meditasyon pratigi yapanlar. DNA matematiginden hesaplanmis frekanslarla farkli bir deneyim.</p>
+        </div>
+        <div class="who-card">
+            <h4 data-tr="Ses Terapistleri" data-en="Sound Therapists">Ses Terapistleri</h4>
+            <p data-tr="Frekans bazli calisma yapan profesyoneller. Not: Bu yazilim tibbi cihaz degildir." data-en="Professionals working with frequency-based practices. Note: This software is not a medical device.">Frekans bazli calisma yapan profesyoneller. Not: Bu yazilim tibbi cihaz degildir.</p>
+        </div>
+    </div>
+</section>
+
+<!-- PACKAGES -->
+<section class="section" id="packages" style="padding-top:0">
+    <div style="text-align:center">
+        <span class="section-tag" data-tr="Paketler" data-en="Packages">Paketler</span>
+        <h2 data-tr="Standard vs Pro" data-en="Standard vs Pro">Standard vs Pro</h2>
+        <p class="section-sub" style="margin:0 auto 3rem" data-tr="Kisisel arastirma icin Standard, profesyonel uretim ve ticari kullanim icin Pro." data-en="Standard for personal research, Pro for professional production and commercial use.">Kisisel arastirma icin Standard, profesyonel uretim ve ticari kullanim icin Pro.</p>
+    </div>
+
+    <div class="pkg-grid">
+        <div class="pkg-card">
+            <h3 class="pkg-name">Standard</h3>
+            <p class="pkg-desc" data-tr="Temel frekans sentezi ve dinleme deneyimi" data-en="Core frequency synthesis and listening experience">Temel frekans sentezi ve dinleme deneyimi</p>
+            <div class="pkg-price" data-tr="Fiyat belirlenecek" data-en="Price TBD">Fiyat belirlenecek</div>
+            <ul class="pkg-list">
+                <li data-tr="342 Frekans Motoru" data-en="342 Frequency Engine">342 Frekans Motoru</li>
+                <li data-tr="Cift Binaural Motor (Theta + Dinamik)" data-en="Dual Binaural Engine (Theta + Dynamic)">Cift Binaural Motor (Theta + Dinamik)</li>
+                <li data-tr="Heart / Body / Trinity Aktivasyon" data-en="Heart / Body / Trinity Activation">Heart / Body / Trinity Aktivasyon</li>
+                <li data-tr="Kathara 3D Gorsellestirme" data-en="Kathara 3D Visualization">Kathara 3D Gorsellestirme</li>
+                <li data-tr="VIZ Paneli (7 yuzebilir pencere)" data-en="VIZ Panel (7 floating windows)">VIZ Paneli (7 yuzebilir pencere)</li>
+                <li data-tr="Stereo Mimari (L/R/C)" data-en="Stereo Architecture (L/R/C)">Stereo Mimari (L/R/C)</li>
+                <li data-tr="Freq Calculator (Sacred matematik)" data-en="Freq Calculator (Sacred math)">Freq Calculator (Sacred matematik)</li>
+                <li data-tr="Kisisel kullanim lisansi" data-en="Personal use license">Kisisel kullanim lisansi</li>
+                <li class="no" data-tr="Media Creator: LOAD / SAVE / IMPORT" data-en="Media Creator: LOAD / SAVE / IMPORT">Media Creator: LOAD / SAVE / IMPORT</li>
+                <li class="no" data-tr="MIDI Recorder / Timeline / Kayit" data-en="MIDI Recorder / Timeline / Recording">MIDI Recorder / Timeline / Kayit</li>
+                <li class="no" data-tr="WAV Export (Stereo)" data-en="WAV Export (Stereo)">WAV Export (Stereo)</li>
+                <li class="no" data-tr="DNA Spiral Playback" data-en="DNA Spiral Playback">DNA Spiral Playback</li>
+                <li class="no" data-tr="Ticari kullanim" data-en="Commercial use">Ticari kullanim</li>
+            </ul>
+        </div>
+
+        <div class="pkg-card pro">
+            <span class="pkg-badge" data-tr="Tam Paket" data-en="Full Package">Tam Paket</span>
+            <h3 class="pkg-name">Pro — Media Creator</h3>
+            <p class="pkg-desc" data-tr="Profesyonel uretim, tam Media Creator ve ticari kullanim" data-en="Professional production, full Media Creator and commercial use">Profesyonel uretim, tam Media Creator ve ticari kullanim</p>
+            <div class="pkg-price" data-tr="Fiyat belirlenecek" data-en="Price TBD">Fiyat belirlenecek</div>
+            <ul class="pkg-list">
+                <li data-tr="Tum Standard ozellikleri" data-en="All Standard features">Tum Standard ozellikleri</li>
+                <li data-tr="Media Creator: LOAD / SAVE / IMPORT MIDI" data-en="Media Creator: LOAD / SAVE / IMPORT MIDI">Media Creator: LOAD / SAVE / IMPORT MIDI</li>
+                <li data-tr="MIDI Recorder (8 kanal, timeline, canli kayit)" data-en="MIDI Recorder (8 channels, timeline, live recording)">MIDI Recorder (8 kanal, timeline, canli kayit)</li>
+                <li data-tr="DNA Spiral Playback" data-en="DNA Spiral Playback">DNA Spiral Playback</li>
+                <li data-tr="WAV Export (Stereo, binaural dahil)" data-en="WAV Export (Stereo, binaural included)">WAV Export (Stereo, binaural dahil)</li>
+                <li data-tr="Sacred Optimizer (50 kutsal carpan)" data-en="Sacred Optimizer (50 sacred multipliers)">Sacred Optimizer (50 kutsal carpan)</li>
+                <li data-tr="VM Register Analizi (canli)" data-en="VM Register Analysis (live)">VM Register Analizi (canli)</li>
+                <li data-tr="Preset kaydetme / yukleme (.qsw)" data-en="Preset save / load (.qsw)">Preset kaydetme / yukleme (.qsw)</li>
+                <li data-tr="Ticari kullanim lisansi" data-en="Commercial use license">Ticari kullanim lisansi</li>
+                <li data-tr="Topluluk forumu erisimi" data-en="Community forum access">Topluluk forumu erisimi</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+    <h2 data-tr="Acik Bilim, Seffaf Veri" data-en="Open Science, Transparent Data">Acik Bilim, Seffaf Veri</h2>
+    <p style="color:var(--t2);margin:1rem 0 2rem" data-tr="Tum frekans hesaplamalari, Python scriptleri ve matematiksel ispatlar Zenodo'da yayinlanmistir." data-en="All frequency calculations, Python scripts, and mathematical proofs are published on Zenodo.">Tum frekans hesaplamalari, Python scriptleri ve matematiksel ispatlar Zenodo'da yayinlanmistir.</p>
+    <a href="https://doi.org/10.5281/zenodo.19221418" class="btn btn-p" target="_blank">DOI: 10.5281/zenodo.19221418</a>
+    <a href="discovery.html" class="btn btn-s" style="margin-left:1rem" data-tr="Kesif Hikayesi" data-en="Discovery Story">Kesif Hikayesi</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <div class="foot-c">
+        <div class="foot-brand">
+            <a href="index.html" class="logo"><img src="images/icon.png" alt="" class="logo-icon">QuantumSynth</a>
+            <p data-tr="342 frekansli mikrotonal ses sentez sistemi. DNA matematigi ve kutsal geometri arastirma projesi." data-en="342-frequency microtonal sound synthesis system. DNA mathematics and sacred geometry research project.">342 frekansli mikrotonal ses sentez sistemi. DNA matematigi ve kutsal geometri arastirma projesi.</p>
+            <p style="color:var(--t2);font-size:0.85rem;margin-top:0.5rem">Murat Tutu — Independent Researcher, Software Developer</p>
+            <a href="https://doi.org/10.5281/zenodo.19221418" class="doi" target="_blank">DOI: 10.5281/zenodo.19221418</a>
+        </div>
+        <div class="foot-links">
+            <h4 data-tr="Sayfa" data-en="Pages">Sayfa</h4>
+            <ul>
+                <li><a href="features.html" data-tr="Ozellikler" data-en="Features">Ozellikler</a></li>
+                <li><a href="discovery.html" data-tr="Kesif Hikayesi" data-en="Discovery">Kesif Hikayesi</a></li>
+                <li><a href="architecture.html" data-tr="Mimari" data-en="Architecture">Mimari</a></li>
+                <li><a href="guide.html" data-tr="Kilavuz" data-en="Guide">Kilavuz</a></li>
+                <li><a href="community.html" data-tr="Topluluk" data-en="Community">Topluluk</a></li>
+            </ul>
+        </div>
+        <div class="foot-links">
+            <h4 data-tr="Yasal" data-en="Legal">Yasal</h4>
+            <ul>
+                <li><a href="disclaimer.html" data-tr="Sorumluluk Reddi" data-en="Disclaimer">Sorumluluk Reddi</a></li>
+                <li><a href="mailto:murat.tutu.13th@gmail.com" data-tr="Iletisim" data-en="Contact">Iletisim</a></li>
+                <li><a href="https://doi.org/10.5281/zenodo.19221418" target="_blank">Zenodo</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="foot-bot">
+        <p>&copy; 2026 QuantumSynth — Secrets of Quantum Waves | Murat Tutu</p>
+        <p class="foot-warn" data-tr="Bu bir hipotez ve arastirma projesidir. Tibbi cihaz degildir. Tedavi vaadi icermez." data-en="This is a hypothesis and research project. It is not a medical device. It makes no treatment claims.">Bu bir hipotez ve arastirma projesidir. Tibbi cihaz degildir. Tedavi vaadi icermez.</p>
+    </div>
+</footer>
+
+<script>
+function toggleLang() {
+    const cur = localStorage.getItem('qs-lang') || 'tr';
+    const next = cur === 'tr' ? 'en' : 'tr';
+    localStorage.setItem('qs-lang', next);
+    applyLang(next);
+}
+function applyLang(lang) {
+    document.querySelectorAll('[data-'+lang+']').forEach(el => {
+        const val = el.getAttribute('data-'+lang);
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.value = val;
+        else el.innerHTML = val;
+    });
+    const btn = document.querySelector('.lang-btn');
+    if (btn) btn.textContent = lang === 'tr' ? 'EN' : 'TR';
+    document.documentElement.lang = lang;
+}
+document.addEventListener('DOMContentLoaded', () => applyLang(localStorage.getItem('qs-lang') || 'tr'));
+</script>
+
+</body>
+</html>
