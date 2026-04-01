@@ -7,6 +7,7 @@
     <meta name="keywords" content="Enneagram, Tesla 369, Kathara, Sacred Geometry, Fibonacci, Golden Ratio, PHI, PI, Meditation Music, Binaural Beats, Frequency Healing, Harmonics, Sound Synthesis, 342 Frequency, Spiritual Music, Esoteric Mathematics, Open Science, Zenodo">
     <meta name="author" content="Murat Tutu">
     <meta name="robots" content="index, follow">
+    <meta name="google-site-verification" content="google8037089703ed367a" />
     <title>Secrets of Quantum Waves — 342 Frequency System</title>
     <style>
         :root {
@@ -476,6 +477,12 @@
     </div>
     <div class="foot-bot">
         <p>&copy; 2026 Secrets of Quantum Waves | Murat Tutu</p>
+        <p style="color:var(--t3);font-size:0.8rem;margin:0.5rem 0">
+            <span style="display:inline-flex;align-items:center;gap:6px">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--cyan)"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <span data-tr="Toplam Ziyaret: " data-en="Total Visits: ">Toplam Ziyaret: </span><strong id="visitor-count" style="color:var(--cyan)">...</strong>
+            </span>
+        </p>
         <p class="foot-warn" data-tr="Bu bir hipotez ve arastirma projesidir. Tibbi cihaz degildir. Tedavi vaadi icermez." data-en="This is a hypothesis and research project. It is not a medical device. It makes no treatment claims.">Bu bir hipotez ve arastirma projesidir. Tibbi cihaz degildir. Tedavi vaadi icermez.</p>
     </div>
 </footer>
@@ -514,6 +521,18 @@ function updateDownloadCount() {
 }
 
 document.addEventListener('DOMContentLoaded', updateDownloadCount);
+
+// Visitor counter
+fetch('https://api.countapi.xyz/hit/secretsofquantumwaves.com/index')
+    .then(res => res.json())
+    .then(data => {
+        const el = document.getElementById('visitor-count');
+        if (el) el.textContent = data.value.toLocaleString();
+    })
+    .catch(() => {
+        const el = document.getElementById('visitor-count');
+        if (el) el.textContent = '-';
+    });
 </script>
 
 </body>
